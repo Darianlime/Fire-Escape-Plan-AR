@@ -5,7 +5,7 @@ using UnityEngine;
 namespace CameraDoorScript
 {
 public class CameraOpenDoor : MonoBehaviour {
-	public float DistanceOpen=3;
+	public float DistanceOpen=1f;
 	public GameObject text;
 	Camera cam;
 	//private int interactMask;
@@ -22,7 +22,6 @@ public class CameraOpenDoor : MonoBehaviour {
               cam.transform.forward * DistanceOpen,
               Color.red);
 		if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, DistanceOpen)) {
-			Debug.Log(hit.transform.name);
 			if (hit.transform.GetComponent<DoorScript.Door>()) {
 				text.SetActive(true);
 				if (Input.GetKeyDown(KeyCode.R)) 
@@ -32,7 +31,6 @@ public class CameraOpenDoor : MonoBehaviour {
 			}
 		} else {
 			text.SetActive(false);
-			Debug.Log("no hit");
 		} 
 	}
 }
