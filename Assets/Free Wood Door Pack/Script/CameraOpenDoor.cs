@@ -7,6 +7,7 @@ namespace CameraDoorScript
 public class CameraOpenDoor : MonoBehaviour {
 	public float DistanceOpen=1f;
 	public GameObject text;
+	public static GameObject qr;
 	Camera cam;
 	//private int interactMask;
 	// Use this for initialization
@@ -22,7 +23,11 @@ public class CameraOpenDoor : MonoBehaviour {
               cam.transform.forward * DistanceOpen,
               Color.red);
 		if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, DistanceOpen)) {
-			if (hit.transform.GetComponent<DoorScript.Door>()) {
+			Debug.Log(hit.transform.gameObject);
+			if (hit.transform.CompareTag("QR")) {
+				qr = hit.transform.gameObject;
+			}
+			else if (hit.transform.GetComponent<DoorScript.Door>()) {
 				text.SetActive(true);
 				if (Input.GetKeyDown(KeyCode.R)) 
 					hit.transform.GetComponent<DoorScript.Door>().OpenDoor();

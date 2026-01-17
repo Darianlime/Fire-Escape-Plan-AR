@@ -1,4 +1,6 @@
 using System.Collections;
+using Mono.Cecil.Cil;
+using Unity.VisualScripting;
 using UnityEngine;
 using ZXing;
 
@@ -9,6 +11,9 @@ public class Room
     public string type;
     public int floor;
     public int room_number;
+    public float pos_x;
+    public float pos_y;
+    public float pos_z;
 }
 
 public class QrCodeReader : MonoBehaviour
@@ -16,16 +21,21 @@ public class QrCodeReader : MonoBehaviour
     //private IBarcodeReader barcodeReader;
     public Camera scanCamera;
     public Texture2D qrImage;
-    public RectTransform scanZone;
+    public GameObject scanObject;
     public string qrResult;
-    public bool qrScanned;
+    public static bool qrScanned;
 
+    public static Room roomData = null;
+
+    private RectTransform scanZone;
     private int texWidth;
     private int texHeight;
+    
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         scanCamera = GetComponent<Camera>();
+        scanZone = scanObject.GetComponent<RectTransform>();
         texWidth = (int)scanZone.rect.width;
         texHeight = (int)scanZone.rect.height;
         qrResult = "";
@@ -39,10 +49,10 @@ public class QrCodeReader : MonoBehaviour
         {
             Decode();
         }
-        if (qrScanned)
-        {
-            ReadJson();
-        }
+        // if (qrScanned)
+        // {
+        //     ReadJson();
+        // }
     }
 
     void Decode()
@@ -64,27 +74,40 @@ public class QrCodeReader : MonoBehaviour
 
         scanCamera.targetTexture = null;
         RenderTexture.active = null;
-        Destroy(rt);
         try {
             var barcodeReader = new BarcodeReader();
             var result = barcodeReader.Decode(tex.GetPixels32(), tex.width, tex.height);
             if (result != null) {
                 qrResult = result.Text;
-                Debug.Log("Simulated QR Code: " + qrResult);
+                roomData = JsonUtility.FromJson<Room>(qrResult);
+                //roomData.building_name = newRoom.building_name;
+                // roomData.floor = newRoom.floor;
+                // roomData.type = newRoom.type;
+                // roomData.room_number = newRoom.room_number;
+                // roomData.pos_x = newRoom.pos_x;
+                // roomData.pos_y = newRoom.pos_y;
+                // roomData.pos_z = newRoom.pos_z;
+                // Debug.Log("Simulated QR Code: " + roomData.building_name);
+                // Debug.Log("Simulated QR Code: " + roomData.pos_x);
+                // Debug.Log("Simulated QR Code: " + roomData.pos_y);
                 qrScanned = true;
             }
         } catch {
             //Debug.Log("No QR detected.");
         }
+        Destroy(rt);
         Destroy(tex);
     }
 
-    void ReadJson()
-    {
-        Room newRoom = JsonUtility.FromJson<Room>(qrResult);
-        Debug.Log("Simulated QR Code: " + newRoom.building_name);
-        Debug.Log("Simulated QR Code: " + newRoom.type);
-        Debug.Log("Simulated QR Code: " + newRoom.floor);
-        Debug.Log("Simulated QR Code: " + newRoom.room_number);
-    }
+    // void ReadJson()
+    // {
+    //     Room newRoom = JsonUtility.FromJson<Room>(qrResult);
+    //     Debug.Log("Simulated QR Code: " + newRoom.building_name);
+    //     Debug.Log("Simulated QR Code: " + newRoom.type);
+    //     Debug.Log("Simulated QR Code: " + newRoom.floor);
+    //     Debug.Log("Simulated QR Code: " + newRoom.room_number);
+    //     Debug.Log("Simulated QR Code: " + newRoom.pos_x);
+    //     Debug.Log("Simulated QR Code: " + newRoom.pos_y);
+    //     Debug.Log("Simulated QR Code: " + newRoom.pos_z);
+    // }
 }
